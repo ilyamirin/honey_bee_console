@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <link href="css/main.css" rel="stylesheet" media="screen">
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/bootstrap-notify.css" rel="stylesheet" media="screen">
+    </head>
+
+    <body>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootstrap-notify.js"></script> 
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a href="/" class="brand">Cloud Ad Processor</a>
+                    <div class="nav-collapse collapse">
+                        <% if ( session 'user' ) { %>
+                            <ul class="nav">
+                                <li><a href="/targets">Targets</a></li>
+                                <li><a href="/banners">Banners</a></li>
+                            </ul>
+                            <form action="/logout" class="navbar-form pull-right" method="get">
+                                <a href="/" class="brand"><%= session ('user')->{ login } %></a>
+                                <input type="submit" class="btn" value="Log out" />
+                            </form>                               
+                        <% } else { %>
+                            <form action="/login" id="login-form" class="navbar-form pull-right" method="post">
+                                <input placeholder="Email" type="text" class="span2" />
+                                <input placeholder="Password" type="password" class="span2" />
+                                <input type="submit" class="btn" value="Log in" />
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">            
+            <%= content %>            
+            <footer>
+                Footer
+            </footer>            
+        </div>
+
+        <div class='notifications top-left'></div>
+
+        <script>
+            var loginForm = $("#login-form");
+            loginForm.find("input[type='submit']").click(function() {
+                $.ajax({
+                    url  : loginForm.attr("action"),
+                    type : 'POST',
+                    data : { 
+                        login    : loginForm.find("input[placeholder='Email']").val(),
+                        password : loginForm.find("input[placeholder='Password']").val()
+                    },
+                    statusCode: {
+                        200 : function() {
+                            window.location.reload();
+                        },
+                        401 : function() {
+                            console.log("unautorised");
+                        }
+                    }
+                });
+                return false;
+            });
+
+        </script>
+    </body>
+</html>
